@@ -21,6 +21,9 @@ class Village ():
     def set_exogamy_taboo(self, boolean, endogamy_strength=0.02):
         self.exogamy_taboo = boolean
         self.endogamy_strength = endogamy_strength
+    def generation_change(self):
+        self.adults = self.children
+        self.children = []
     def immigrate(self):
         """If random fluctuations see a village's population drop to zero (or whatever threshold), the largest
             village in the vicinity is selected and half its population migrates into

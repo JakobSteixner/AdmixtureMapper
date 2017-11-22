@@ -208,8 +208,7 @@ for generation in range(181):
         for person in village.adults:
                 person.spawn(1) 
     for village in allcontinents:
-        village.adults = village.children
-        village.children = []
+        village.generation_change() # has to be a separate loop - otherwise some newborns might become parents
     for village in allcontinents:
         if len(village.adults) <= vs // 4:
             village.immigrate()
