@@ -64,7 +64,7 @@ class Person():
         if not isinstance(self, Person):
             print "I'm not a person, how did this happen???"
             print self, type(self)
-            return 1
+            return 
         distance_limit = len(self.homevillage.distance_matrix)
         distance_of_partner = distance_limit * 2 # set an implausibly high distance to initate loop
         
@@ -108,13 +108,14 @@ class Person():
                 print partner_homevillage.adults
                 print "partner homevillage populated by wrong type, attempt ", + i
         if not isinstance(partner, Person):
+            # emergency exit
             partner = random.choice(homevillage)
         
             
             
         for i in range(random.randrange(2 * number_to_replace + 1)):
             offspring = Person(homevillage, ancestry_computed=self.ancestry_identifier | partner.ancestry_identifier)
-            if rel_mode:
+            if rel_mode: # rel_mode not currently implemented in full
                 offspring.ancestry_matrix = [(self.ancestry_matrix[i] + othercode) / 2.0 for (i, othercode) in enumerate(partner.ancestry_matrix)]
 
             

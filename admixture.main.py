@@ -43,7 +43,7 @@ def flattenonce(iterable):
     return returnlist
 
 
-
+# input file reader urgently needed!
 
 worldmap = [Region(37, 37, distance_limit, name="Europe"),
             Region(40, 40, distance_limit, name="Western_Africa"),
@@ -83,11 +83,14 @@ for continent in worldmap:
 
 print "total villages to create", sum([(continent.lat_size * continent.lon_size) for continent in worldmap])
 print " total people to create", sum([(continent.lat_size* continent.lon_size) for continent in worldmap]) * villagesize
+   # assumes village size is equal across regions, which it is because of the previous block but theoretically doesn't have to be
 for continent in worldmap:
     continent.populate()
     continent.calculate_distances()
     print len(continent)
-    exec(string.lower(continent.name).replace(" ","_") + " = continent") 
+    exec(string.lower(continent.name).replace(" ","_") + " = continent")
+    # this is safe because Region().make_name already does sanity checking, thus only adequate names
+    # consisting of nothing but digits, letters and _, and no digits in position 0, survive to this point
     if rel_mode:
         for village in continent:
             for person in village.adults:
@@ -117,7 +120,7 @@ for continent in worldmap:
 
 
 allcontinents = flattenonce([continent for continent in worldmap])
-
+# this should also be handled through specifications in the input file
 eastern_africa.make_anchor()
 eastern_africa.joinregions(southern_africa,"se", "ne", junctiondepth= distance_limit//2, gap=0)
 eastern_africa.joinregions(southern_africa, "s")
@@ -176,50 +179,6 @@ india.joinregions(southeast_asia, "ne", "nw")
 
 
 
-
-
-##far_east.joinregions(east_siberia, "nw", "sw", junctiondepth=distance_limit // 3)
-#europe.joinregions(central_asia, "ne", "w", junctiondepth=distance_limit)
-#middle_east.joinregions(central_asia, "ne", "s", junctiondepth=2 * distance_limit // 3)
-#central_asia.joinregions(south_central_siberia, "e", "nw", junctiondepth = distance_limit)
-#central_asia.joinregions(south_central_siberia, "se", "sw", junctiondepth = 2 * distance_limit // 3)
-#central_asia.joinregions(north_central_siberia, "e", "sw", junctiondepth=distance_limit // 4)
-#central_asia.joinregions(north_central_siberia, "ne", "nw", junctiondepth=distance_limit // 4)
-#north_central_siberia.joinregions(east_siberia, "se", "sw", junctiondepth=distance_limit)
-#south_central_siberia.joinregions(east_siberia, "ne", "sw", junctiondepth=distance_limit // 2)
-#south_central_siberia.joinregions(north_central_siberia, "ne", "se", junctiondepth = distance_limit // 2)
-#krasnoyarsk.joinregions(central_asia, "sw", "n", junctiondepth = distance_limit //4)
-#krasnoyarsk.joinregions(north_central_siberia, "s", "nw", junctiondepth = distance_limit // 4)
-#krasnoyarsk.joinregions(north_central_siberia, "se", "ne", junctiondepth = distance_limit // 3)
-#krasnoyarsk.joinregions(east_siberia, "e", "nw", junctiondepth = distance_limit // 4)
-#north_central_siberia.joinregions(east_siberia, "ne", "w", junctiondepth = distance_limit // 4)
-#india.joinregions(shangri_la,"nw", "s", junctiondepth=distance_limit // 5)
-#middle_east.joinregions(shangri_la, "e", junctiondepth=distance_limit // 5)
-#south_central_siberia.joinregions(far_east, "ne", "nw", junctiondepth=2* distance_limit // 5)
-#south_central_siberia.joinregions(far_east, "se", "w", junctiondepth= distance_limit // 2)
-#east_siberia.joinregions(chukchi, "e", "sw", junctiondepth=distance_limit // 3)
-#east_siberia.joinregions(chukchi, "ne", "nw", junctiondepth=distance_limit // 2)
-#chukchi.joinregions(alaska, "e", junctiondepth= 3) # used to be 3
-#alaska.joinregions(north_america, "e","nw", junctiondepth=distance_limit//3)
-#north_america.joinregions(south_america, "se", junctiondepth= 2 * distance_limit // 3)
-#north_america.joinregions(carribean, "e", "nw", junctiondepth=distance_limit//3)
-#carribean.joinregions(south_america, "se", "n", junctiondepth=distance_limit//3)
-#north_america.joinregions(greenland, "ne", "nw", junctiondepth=5)
-#india.joinregions(southeast_asia, "e", junctiondepth= 2 * distance_limit//3)
-#india.joinregions(southeast_asia, "ne", "nw", junctiondepth=distance_limit)
-##india.joinregions(far_east, "ne", "sw", junctiondepth=distance_limit // 4)
-#southeast_asia.joinregions(far_east, "ne", "s", junctiondepth=distance_limit // 2)
-#southeast_asia.joinregions(far_east, "nw", "sw", junctiondepth=distance_limit // 4)
-#southeast_asia.joinregions(indonesia, "se","w", junctiondepth=distance_limit // 3)
-#indonesia.joinregions(papua,"e", junctiondepth= distance_limit // 4)
-#papua.joinregions(australia, "s", "ne", junctiondepth = max((distance_limit // 6, 3))) #used to be 3 in 116
-#south_america.joinregions(patagonia, "s", "ne", junctiondepth = distance_limit // 4)
-#south_america.joinregions(patagonia, "sw", "nw", junctiondepth = distance_limit // 4)
-
-#worldmap = [continent for continent in worldmap if continent.isfixed]
-
-#print [len(village.distance_matrix[8]) for village in allcontinents]
-
 #allcontinents = flattenonce([continent.mainregion for continent in worldmap])
 print "combined length of distance_matrixs created", distance_limit * len(allcontinents)
 print "combined transitive length of distance_matrixs created", sum(len(flattenonce(village.distance_matrix)) for village in allcontinents)
@@ -260,85 +219,8 @@ for generation in range(181):
         for origin_continent in worldmap:
             print "mapping ", origin_continent.name
             showstatus_multiregion(
-                [(drawing, drawing.x_offset, drawing.y_offset) for drawing in worldmap],
-                #[
-                #    (southern_africa, western_africa.villagenumber_sqrt, 0),
-                #    (eastern_africa, western_africa.villagenumber_sqrt, southern_africa.villagenumber_sqrt),
-                #    (western_africa, 0, southern_africa.villagenumber_sqrt),
-                #    (middle_east, africa.villagenumber_sqrt+1,africa.villagenumber_sqrt+1),
-                #    (europe,
-                #        africa.villagenumber_sqrt - europe.villagenumber_sqrt,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + 2),
-                #    (france,
-                #        africa.villagenumber_sqrt - europe.villagenumber_sqrt - france.villagenumber_sqrt,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt - france.villagenumber_sqrt + 2
-                #        ),
-                #    (spain,
-                #        africa.villagenumber_sqrt - europe.villagenumber_sqrt - france.villagenumber_sqrt - spain.villagenumber_sqrt,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt - france.villagenumber_sqrt - spain.villagenumber_sqrt + 2),
-                #    (britain,
-                #        africa.villagenumber_sqrt - europe.villagenumber_sqrt - britain.villagenumber_sqrt - 3,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + 4),
-                #    (ireland,
-                #        africa.villagenumber_sqrt - europe.villagenumber_sqrt - britain.villagenumber_sqrt - ireland.villagenumber_sqrt - 6,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + 10),
-                #    (india, 
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + 2,
-                #        africa.villagenumber_sqrt - india.villagenumber_sqrt + 5),
-                #    (shangri_la,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + 2,
-                #        africa.villagenumber_sqrt + 6
-                #        ),
-                #    (central_asia, africa.villagenumber_sqrt + 1,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + 2),
-                #    (south_central_siberia, africa.villagenumber_sqrt + central_asia.villagenumber_sqrt +2,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + 2),
-                #    (north_central_siberia, africa.villagenumber_sqrt + central_asia.villagenumber_sqrt +2,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + south_central_siberia.villagenumber_sqrt + 3),
-                #    (krasnoyarsk, africa.villagenumber_sqrt + 12 * dummy_siberia_size // 11 - krasnoyarsk.villagenumber_sqrt + 1,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + central_asia.villagenumber_sqrt + 3),
-                #    (east_siberia, africa.villagenumber_sqrt + 12 * siberia.villagenumber_sqrt / 11 + 3,
-                #        africa.villagenumber_sqrt + far_east.villagenumber_sqrt + 9),
-                #    (chukchi, africa.villagenumber_sqrt + 12 * siberia.villagenumber_sqrt // 11 + east_siberia.villagenumber_sqrt + 4,
-                #        africa.villagenumber_sqrt + far_east.villagenumber_sqrt + east_siberia.villagenumber_sqrt - chukchi.villagenumber_sqrt + 10),
-                #    (alaska,
-                #        africa.villagenumber_sqrt + 12 * siberia.villagenumber_sqrt // 11 + east_siberia.villagenumber_sqrt + chukchi.villagenumber_sqrt + 7,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + siberia.villagenumber_sqrt - alaska.villagenumber_sqrt 
-                #        ),
-                #    (far_east, africa.villagenumber_sqrt + max((middle_east.villagenumber_sqrt + shangri_la.villagenumber_sqrt + 13, 12 * siberia.villagenumber_sqrt // 11  + 3)),
-                #        africa.villagenumber_sqrt + 7),
-                #    (southeast_asia, africa.villagenumber_sqrt + max((middle_east.villagenumber_sqrt + india.villagenumber_sqrt + 3, siberia.villagenumber_sqrt + 2)),
-                #        africa.villagenumber_sqrt - southeast_asia.villagenumber_sqrt + 5),
-                #    (indonesia,
-                #        africa.villagenumber_sqrt + max((middle_east.villagenumber_sqrt + india.villagenumber_sqrt + 4, siberia.villagenumber_sqrt + 3)) + southeast_asia.villagenumber_sqrt,
-                #        africa.villagenumber_sqrt - southeast_asia.villagenumber_sqrt + 5 - indonesia.villagenumber_sqrt // 2
-                #        ),
-                #    (papua, africa.villagenumber_sqrt + max((middle_east.villagenumber_sqrt + india.villagenumber_sqrt + 6, siberia.villagenumber_sqrt + 5)) + southeast_asia.villagenumber_sqrt + indonesia.villagenumber_sqrt + 7,
-                #        africa.villagenumber_sqrt - southeast_asia.villagenumber_sqrt -2),
-                #    (australia, africa.villagenumber_sqrt + max((middle_east.villagenumber_sqrt + india.villagenumber_sqrt + 6, siberia.villagenumber_sqrt + 5)) + southeast_asia.villagenumber_sqrt + papua.villagenumber_sqrt  + indonesia.villagenumber_sqrt - australia.villagenumber_sqrt,
-                #        africa.villagenumber_sqrt - southeast_asia.villagenumber_sqrt - australia.villagenumber_sqrt - 8),
-                #    (north_america,
-                #        africa.villagenumber_sqrt + 12 * siberia.villagenumber_sqrt // 11 + max((east_siberia.villagenumber_sqrt + alaska.villagenumber_sqrt + chukchi.villagenumber_sqrt + 8, far_east.villagenumber_sqrt + 30-alaska.villagenumber_sqrt)),
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + siberia.villagenumber_sqrt - north_america.villagenumber_sqrt
-                #        ),
-                #    (greenland,
-                #        africa.villagenumber_sqrt + siberia.villagenumber_sqrt + max((east_siberia.villagenumber_sqrt + alaska.villagenumber_sqrt + chukchi.villagenumber_sqrt +15, far_east.villagenumber_sqrt + 30-alaska.villagenumber_sqrt)) + north_america.villagenumber_sqrt + 7,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + siberia.villagenumber_sqrt - greenland.villagenumber_sqrt
-                #        ),
-                #    (south_america,
-                #        africa.villagenumber_sqrt + siberia.villagenumber_sqrt + max((east_siberia.villagenumber_sqrt + alaska.villagenumber_sqrt + chukchi.villagenumber_sqrt +15, far_east.villagenumber_sqrt + 30-alaska.villagenumber_sqrt)) + north_america.villagenumber_sqrt,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + siberia.villagenumber_sqrt - north_america.villagenumber_sqrt - south_america.villagenumber_sqrt),
-                #    (patagonia,
-                #        africa.villagenumber_sqrt + siberia.villagenumber_sqrt + max((east_siberia.villagenumber_sqrt + alaska.villagenumber_sqrt + chukchi.villagenumber_sqrt +15, far_east.villagenumber_sqrt + 30-alaska.villagenumber_sqrt)) + north_america.villagenumber_sqrt,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + siberia.villagenumber_sqrt - north_america.villagenumber_sqrt - south_america.villagenumber_sqrt - patagonia.villagenumber_sqrt),
-                #    (carribean,
-                #        africa.villagenumber_sqrt + siberia.villagenumber_sqrt + max((east_siberia.villagenumber_sqrt + alaska.villagenumber_sqrt + chukchi.villagenumber_sqrt +17, far_east.villagenumber_sqrt + 32-alaska.villagenumber_sqrt)) + north_america.villagenumber_sqrt + 4,
-                #        africa.villagenumber_sqrt + middle_east.villagenumber_sqrt + siberia.villagenumber_sqrt - north_america.villagenumber_sqrt + 2
-                #     ),
-                #    (madagascar, africa.villagenumber_sqrt + 3, africa.villagenumber_sqrt // 2 - madagascar.villagenumber_sqrt
-                #     )
-                #],
-               origin_continent , i, vs, preferred_marker=",")
+                [(continent_drawn, continent_drawn.x_offset, continent_drawn.y_offset) for continent_drawn in worldmap],
+                    origin_continent , i, vs, preferred_marker=",")
     #exit()
 
 
