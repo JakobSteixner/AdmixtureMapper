@@ -20,3 +20,7 @@ Contains a method for spawning offspring with a partner selected from the homevi
 attribute: ancestry_identifier identifies all the regions where this person´s ancestors lived at the beginning of the simulation through an integer, where every position in the integer´s binary representation corresponds to a region. The order is determined counting backward from the ones in the order the regions were created (e. g. the first region created and thus with identifier 0 will be represented as a 0 or 1 in a person´s ancestry_identifier)
 
 admixturePlotter maps the results
+
+
+See blog post demonstrating and discussing an exemplary run: https://panloquens.wordpress.com/2017/11/14/were-all-siberians/
+
